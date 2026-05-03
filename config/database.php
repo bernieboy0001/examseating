@@ -1,24 +1,17 @@
 <?php
 class Database {
-    private $host = "localhost";
-    private $db_name = "final_year_project";
-    private $username = "root";
-    private $password = "";
-    public $conn;
-
-    public function connect() {
-        $this->conn = null;
+    public function connect(){
         try {
-            $this->conn = new PDO(
-                "mysql:host=".$this->host.";dbname=".$this->db_name,
-                $this->username,
-                $this->password
+            return new PDO(
+                "mysql:host=YOUR_HOST;dbname=YOUR_DB;charset=utf8mb4",
+                "YOUR_USER",
+                "YOUR_PASSWORD",
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+                ]
             );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            echo "Connection error: ".$e->getMessage();
+        } catch(PDOException $e){
+            die("Connection error: " . $e->getMessage());
         }
-        return $this->conn;
     }
 }
-?>
