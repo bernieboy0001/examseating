@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Automated Examination Seating System</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#2c7be5,#6a11cb);
+color:white;
+}
+
+/* Main container */
+
+.container{
+text-align:center;
+max-width:700px;
+padding:50px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(10px);
+border-radius:12px;
+box-shadow:0 10px 35px rgba(0,0,0,0.2);
+}
+
+/* Title */
+
+h1{
+font-size:36px;
+margin-bottom:15px;
+}
+
+/* Description */
+
+.subtitle{
+font-size:16px;
+margin-bottom:35px;
+opacity:0.9;
+}
+
+/* Portal Buttons Layout */
+
+.portal-buttons{
+display:flex;
+gap:25px;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+/* Button Base */
+
+.portal-btn{
+padding:18px 28px;
+font-size:16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+transition:0.25s;
+font-weight:600;
+}
+
+/* Lecturer Button */
+
+.lecturer-btn{
+background:#2c7be5;
+color:white;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.lecturer-btn:hover{
+transform:translateY(-3px);
+background:#1f63c7;
+}
+
+/* Student Button */
+
+.student-btn{
+background:#27ae60;
+color:white;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.student-btn:hover{
+transform:translateY(-3px);
+background:#1f8f4d;
+}
+
+/* Footer */
+
+.footer{
+margin-top:30px;
+font-size:13px;
+opacity:0.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Automated Examination Seating System</h1>
+
+<p class="subtitle">
+A smart platform for generating and managing examination seating arrangements efficiently.
+</p>
+
+<div class="portal-buttons">
+
+<a href="auth/login.php?role=lecturer">
+<button class="portal-btn lecturer-btn">
+Lecturer Portal
+</button>
+</a>
+
+<a href="students/index.php">
+<button class="portal-btn student-btn">
+Student Portal
+</button>
+</a>
+
+</div>
+
+<div class="footer">
+© <?php echo date("Y"); ?> Examination Seating System
+</div>
+
+</div>
+
+</body>
+</html>
