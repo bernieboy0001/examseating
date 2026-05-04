@@ -28,33 +28,34 @@ if (isset($_POST['login'])) {
 
     if ($user) {
 
-       if($user && password_verify($password, $user['password'])){
+        if (password_verify($password, $user['password'])) {
 
-   if($user['status'] === 'pending'){
-    $error = "⏳ Awaiting admin approval.";
-} elseif($user['status'] === 'disabled'){
-    $error = "🚫 Your account has been disabled.";
-} else {
-    // allow login
-}
+            // STATUS CHECK
+            if ($user['status'] === 'pending') {
+                $error = "⏳ Awaiting admin approval.";
+            } elseif ($user['status'] === 'disabled') {
+                $error = "🚫 Your account has been disabled.";
+            } else {
 
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['role'] = $user['role'];
-        $_SESSION['name'] = $user['name'];
+                // LOGIN SUCCESS
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['name'] = $user['name'];
 
-        if($user['role'] === "super_admin"){
-            header("Location: ../super_admin/dashboard.php");
-        } elseif($user['role'] === "lecturer"){
-            header("Location: ../lecturer/dashboard.php");
+                if ($user['role'] === "super_admin") {
+                    header("Location: ../super_admin/dashboard.php");
+                } elseif ($user['role'] === "lecturer") {
+                    header("Location: ../lecturer/dashboard.php");
+                } else {
+                    header("Location: ../student/index.php");
+                }
+                exit;
+            }
+
         } else {
-            header("Location: ../student/index.php");
+            $error = "Incorrect password";
         }
-        exit;
-    }
 
-} else {
-    $error = "Invalid email or password";
-}
     } else {
         $error = "User not found";
     }
