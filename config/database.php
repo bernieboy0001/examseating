@@ -10,14 +10,11 @@ class Database {
     public function connect(){
         try {
             return new PDO(
-                "mysql:host={$this->host};port={$this->port};dbname={$this->db_name};charset=utf8mb4",
-                $this->username,
-                $this->password,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-                ]
-            );
+    "mysql:host=trolley.proxy.rlwy.net;port=40089;dbname=railway;charset=utf8mb4",
+    "root",
+    "gmiSweVyGWayDGErEcxZwLtZnMcHtZEj",
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);
         } catch(PDOException $e){
             die("Connection error: " . $e->getMessage());
         }
