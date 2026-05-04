@@ -17,38 +17,37 @@ $message = "";
 /* ======================
    LOGIN PROCESS
 ====================== */
-if(isset($_POST['login'])){
+if (isset($_POST['login'])) {
+
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    $stmt = $db->prepare("SELECT * FROM users WHERE email=? LIMIT 1");
+    $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if(!$user){
-        $error = "Invalid email or password";
-    } 
-    elseif(!password_verify($password, $user['password'])){
-        $error = "Invalid email or password";
-    }
-    elseif(trim(strtolower($user['status'])) !== 'approved'){
-        $error = "⏳ Awaiting admin approval.";
-    }
-    else {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['role'] = $user['role'];
-        $_SESSION['name'] = $user['name'];
+    if ($user) {
 
-        if($user['role'] === "super_admin"){
-            header("Location: ../super_admin/dashboard.php");
-        } elseif($user['role'] === "lecturer"){
-            header("Location: ../lecturer/dashboard.php");
-        } else {
-            header("Location: ../student/index.php");
-        }
-        exit;
-    }
+        if (password_verify($password, $user['password'])) {
 
+            if ($user['status'] !== 'approved') {
+                $error = "⏳ Awaiting admin approval.";
+            } else {
+
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['name'] = $user['name'];
+
+                // ROLE REDIRECT
+                if ($user['role'] === "super_admin") {
+                    header("Location: ../super_admin/dashboard.php");
+                } elseif ($user['role'] === "lecturer") {
+                    header("Location: ../lecturer/dashboard.php");
+                } else {
+                    header("Location: ../student/index.php");
+                }
+                exit;
+            }
 
         } else {
             $error = "Incorrect password";
