@@ -30,11 +30,13 @@ if (isset($_POST['login'])) {
 
        if($user && password_verify($password, $user['password'])){
 
-    if($user['status'] === 'pending'){
-        $error = "⏳ Awaiting admin approval.";
-    } elseif($user['status'] === 'disabled'){
-        $error = "🚫 Account disabled.";
-    } else {
+   if($user['status'] === 'pending'){
+    $error = "⏳ Awaiting admin approval.";
+} elseif($user['status'] === 'disabled'){
+    $error = "🚫 Your account has been disabled.";
+} else {
+    // allow login
+}
 
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
