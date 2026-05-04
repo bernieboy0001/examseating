@@ -48,7 +48,7 @@ if(isset($_POST['login'])){
         }
         exit;
     }
-}
+
 
         } else {
             $error = "Incorrect password";
