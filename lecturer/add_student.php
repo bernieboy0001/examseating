@@ -14,9 +14,9 @@ $message = "";
    MANUAL ADD
 ====================== */
 if(isset($_POST['add_student'])){
-    $matric = $_POST['matric_no'];
-    $name = $_POST['name'];
-    $department = $_POST['department'];
+    $matric = trim($_POST['matric_no']);
+    $name = trim($_POST['name']);
+    $department = trim($_POST['department']);
 
     $stmt = $db->prepare("INSERT INTO students (matric_no, name, department) VALUES (?, ?, ?)");
     $stmt->execute([$matric, $name, $department]);
@@ -32,12 +32,10 @@ if(isset($_POST['upload'])){
         $file = fopen($_FILES['file']['tmp_name'], "r");
 
         while(($row = fgetcsv($file)) !== FALSE){
-            $matric = $row[0];
-            $name = $row[1];
-            $department = $row[2];
+            if(empty($row[0])) continue;
 
             $stmt = $db->prepare("INSERT INTO students (matric_no, name, department) VALUES (?, ?, ?)");
-            $stmt->execute([$matric, $name, $department]);
+            $stmt->execute([$row[0], $row[1], $row[2]]);
         }
 
         fclose($file);
@@ -49,137 +47,223 @@ if(isset($_POST['upload'])){
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Students</title>
 
 <style>
 
+/* ===== THEME ===== */
+:root{
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --text:#333;
+    --primary:#2c7be5;
+    --green:#27ae60;
+    --border:#ddd;
+}
+
+.dark-mode{
+    --bg:#121212;
+    --card:#1e1e1e;
+    --text:#e0e0e0;
+    --primary:#4da3ff;
+    --green:#2ecc71;
+    --border:#333;
+}
+
+/* ===== GLOBAL ===== */
 body{
-font-family:'Segoe UI',sans-serif;
-background:#f1f4f9;
-margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+    margin:0;
+    color:var(--text);
+    transition:0.3s;
 }
 
+/* ===== NAV ===== */
+.nav{
+    background:var(--card);
+    padding:12px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.logo-box{
+    width:38px;
+    height:38px;
+    background:var(--primary);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+}
+
+.toggle{
+    cursor:pointer;
+    padding:6px 10px;
+    border-radius:6px;
+    border:1px solid var(--border);
+}
+
+/* ===== CONTAINER ===== */
 .container{
-max-width:900px;
-margin:50px auto;
-background:white;
-padding:35px;
-border-radius:10px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    max-width:900px;
+    margin:30px auto;
+    padding:20px;
 }
 
-h2{
-margin-top:0;
-color:#2c3e50;
+/* ===== HEADER ===== */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
 }
 
+h1{
+    margin:0;
+}
+
+/* ===== CARD ===== */
 .card{
-background:#fafafa;
-border:1px solid #eee;
-border-radius:8px;
-padding:20px;
-margin-bottom:25px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:25px;
 }
 
+/* ===== INPUT ===== */
 input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:14px;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
 }
 
+input:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+/* ===== BUTTONS ===== */
 button{
-margin-top:15px;
-padding:12px 18px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:500;
+    margin-top:15px;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:500;
+    transition:0.2s;
+}
+
+button:active{
+    transform:scale(0.97);
 }
 
 .btn-primary{
-background:#2c7be5;
-color:white;
+    background:var(--primary);
+    color:white;
 }
 
 .btn-upload{
-background:#27ae60;
-color:white;
+    background:var(--green);
+    color:white;
 }
 
 .btn-back{
-background:#6c757d;
-color:white;
+    background:#6c757d;
+    color:white;
 }
 
+/* ===== MESSAGE ===== */
 .message{
-background:#e8f8f1;
-color:#27ae60;
-padding:12px;
-border-radius:6px;
-margin-bottom:20px;
-font-weight:500;
+    background:#eafaf1;
+    color:var(--green);
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:20px;
 }
 
+/* ===== NOTE ===== */
 .note{
-font-size:14px;
-color:#666;
-margin-top:5px;
+    font-size:13px;
+    opacity:0.8;
 }
 
-.divider{
-height:1px;
-background:#eee;
-margin:30px 0;
-}
+/* ===== MOBILE ===== */
+@media(max-width:600px){
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
 
-.header h1{
-font-size:22px;
-margin:0;
+    .container{
+        margin:10px;
+    }
+
+    h1{
+        font-size:20px;
+    }
 }
 
 </style>
-
 </head>
 
 <body>
+
+<!-- NAV -->
+<div class="nav">
+    <div class="logo">
+        <div class="logo-box">🎓</div>
+        <strong>Exam System</strong>
+    </div>
+
+    <div>
+        <span class="toggle" id="darkToggle">🌙</span>
+    </div>
+</div>
 
 <div class="container">
 
 <div class="header">
 <h1>Student Management</h1>
 <a href="dashboard.php">
-<button class="btn-back">← Back to Dashboard</button>
+<button class="btn-back">← Back</button>
 </a>
 </div>
 
 <?php if($message): ?>
 <div class="message">
-<?php echo $message; ?>
+<?php echo htmlspecialchars($message); ?>
 </div>
 <?php endif; ?>
 
-<!-- MANUAL ADD -->
-
+<!-- MANUAL -->
 <div class="card">
 
-<h2>Add Student Manually</h2>
+<h2>Add Student</h2>
 
 <form method="post">
 
 <input type="text" name="matric_no" placeholder="Matric Number" required>
-
 <input type="text" name="name" placeholder="Student Name" required>
-
 <input type="text" name="department" placeholder="Department" required>
 
 <button type="submit" name="add_student" class="btn-primary">
@@ -190,16 +274,13 @@ Add Student
 
 </div>
 
-<div class="divider"></div>
-
-<!-- CSV UPLOAD -->
-
+<!-- CSV -->
 <div class="card">
 
-<h2>Upload Students via CSV</h2>
+<h2>Upload CSV</h2>
 
 <p class="note">
-CSV Format: <b>matric_no, name, department</b>
+Format: matric_no, name, department
 </p>
 
 <form method="post" enctype="multipart/form-data">
@@ -207,7 +288,7 @@ CSV Format: <b>matric_no, name, department</b>
 <input type="file" name="file" required>
 
 <button type="submit" name="upload" class="btn-upload">
-Upload CSV File
+Upload CSV
 </button>
 
 </form>
@@ -215,6 +296,30 @@ Upload CSV File
 </div>
 
 </div>
+
+<script>
+
+// DARK MODE GLOBAL
+const toggle = document.getElementById("darkToggle");
+
+if(localStorage.getItem("theme") === "dark"){
+    document.body.classList.add("dark-mode");
+    toggle.innerText = "☀️";
+}
+
+toggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")){
+        localStorage.setItem("theme", "dark");
+        toggle.innerText = "☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        toggle.innerText = "🌙";
+    }
+});
+
+</script>
 
 </body>
 </html>
