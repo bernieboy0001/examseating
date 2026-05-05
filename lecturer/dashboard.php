@@ -10,11 +10,13 @@ if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'lecturer'){
 require_once "../config/database.php";
 $db = (new Database())->connect();
 
-// Get all students
-$students = $db->query("SELECT * FROM students ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
-
 // Get department counts
-$departments = $db->query("SELECT department, COUNT(*) as total FROM students GROUP BY department ORDER BY department ASC")->fetchAll(PDO::FETCH_ASSOC);
+$departments = $db->query("
+    SELECT department, COUNT(*) as total 
+    FROM students 
+    GROUP BY department 
+    ORDER BY department ASC
+")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +37,7 @@ $departments = $db->query("SELECT department, COUNT(*) as total FROM students GR
     --card:#ffffff;
     --primary:#3498db;
     --navbar:#2c3e50;
+    --border:#ddd;
 }
 
 .dark-mode{
@@ -43,6 +46,7 @@ $departments = $db->query("SELECT department, COUNT(*) as total FROM students GR
     --card:#1e1e1e;
     --primary:#4da3ff;
     --navbar:#1a1a1a;
+    --border:#333;
 }
 
 /* --- GLOBAL --- */
@@ -62,6 +66,7 @@ body{
     display:flex;
     align-items:center;
     justify-content:space-between;
+    flex-wrap:wrap;
 }
 
 .logo{
@@ -71,14 +76,14 @@ body{
 }
 
 .logo-box{
-    width:40px;
-    height:40px;
+    width:42px;
+    height:42px;
     background:var(--primary);
-    border-radius:8px;
+    border-radius:10px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-weight:bold;
+    font-size:20px;
 }
 
 .logo-text{
@@ -92,15 +97,15 @@ body{
 
 /* DARK BUTTON */
 .toggle-btn{
-    background:none;
-    border:1px solid #ccc;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.4);
     color:white;
-    padding:5px 10px;
+    padding:6px 10px;
     border-radius:6px;
     cursor:pointer;
 }
 
-/* --- MAIN CONTAINER --- */
+/* --- MAIN --- */
 .container{
     width:95%;
     max-width:1200px;
@@ -113,7 +118,7 @@ h1{
 }
 
 p{
-    color:var(--text);
+    opacity:0.8;
 }
 
 /* --- ACTION CARDS --- */
@@ -136,12 +141,13 @@ p{
     color:white;
     font-weight:500;
     cursor:pointer;
-    transition:0.3s;
+    transition:0.25s;
     font-size:15px;
 }
 
 .dashboard-buttons button:hover{
-    transform:translateY(-3px);
+    transform:translateY(-4px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
 }
 
 button.add{background:#3498db;}
@@ -160,14 +166,14 @@ button.logout{background:#e74c3c;}
     max-width:400px;
     padding:12px;
     border-radius:8px;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     background:var(--card);
     color:var(--text);
 }
 
 #suggestions{
     background:var(--card);
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-top:none;
     max-width:400px;
 }
@@ -177,7 +183,7 @@ button.logout{background:#e74c3c;}
     cursor:pointer;
 }
 .suggestion-item:hover{
-    background:#f1f1f1;
+    background:rgba(0,0,0,0.05);
 }
 
 /* --- TABLE --- */
@@ -200,12 +206,12 @@ th,td{
 }
 
 th{
-    background:#3498db;
+    background:var(--primary);
     color:white;
 }
 
 tr:nth-child(even){
-    background:rgba(0,0,0,0.03);
+    background:rgba(0,0,0,0.04);
 }
 
 /* --- MOBILE --- */
@@ -214,7 +220,7 @@ tr:nth-child(even){
     .navbar{
         flex-direction:column;
         align-items:flex-start;
-        gap:8px;
+        gap:10px;
     }
 
     .dashboard-buttons{
@@ -227,8 +233,13 @@ tr:nth-child(even){
 }
 
 @media(max-width:480px){
+
     .dashboard-buttons{
         grid-template-columns:1fr;
+    }
+
+    #search{
+        max-width:100%;
     }
 }
 
@@ -248,7 +259,7 @@ tr:nth-child(even){
     <div style="display:flex; align-items:center; gap:10px;">
         <button id="darkToggle" class="toggle-btn">🌙</button>
         <div class="user">
-            <?php echo $_SESSION['name'] ?? 'Lecturer'; ?>
+            <?php echo htmlspecialchars($_SESSION['name'] ?? 'Lecturer'); ?>
         </div>
     </div>
 
@@ -298,6 +309,7 @@ tr:nth-child(even){
 </div>
 
 <script>
+
 // SEARCH
 document.getElementById("search").addEventListener("keyup", function(){
     let query = this.value;
@@ -317,7 +329,7 @@ document.getElementById("search").addEventListener("keyup", function(){
 // DARK MODE
 const toggleBtn = document.getElementById("darkToggle");
 
-// load saved theme
+// Load saved theme
 if(localStorage.getItem("theme") === "dark"){
     document.body.classList.add("dark-mode");
     toggleBtn.innerText = "☀️";
@@ -334,6 +346,7 @@ toggleBtn.addEventListener("click", () => {
         toggleBtn.innerText = "🌙";
     }
 });
+
 </script>
 
 </body>
