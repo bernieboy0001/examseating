@@ -236,7 +236,7 @@ tr:nth-child(even){
     <div class="actions">
         <a href="dashboard.php"><button class="btn-back">← Back</button></a>
         <a href="add_student.php"><button class="btn-add">+ Add</button></a>
-        <a href="generate_students.php"><button class="btn-seat">⚙ Generate</button></a>
+        <a href="generate.php"><button class="btn-seat">⚙ Generate</button></a>
     </div>
 </div>
 
