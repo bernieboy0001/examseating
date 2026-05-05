@@ -23,170 +23,231 @@ $departments = $db->query("SELECT department, COUNT(*) as total FROM students GR
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lecturer Dashboard</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
-/* --- Global Styles --- */
-body {
-    font-family: 'Roboto', sans-serif;
-    background: #f0f2f5;
-    margin: 0;
-    padding: 0;
-    color: #333;
+
+/* --- GLOBAL --- */
+body{
+    font-family:'Roboto',sans-serif;
+    background:#f4f6f9;
+    margin:0;
 }
 
-.container {
-    width: 95%;
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 30px;
+/* --- NAVBAR --- */
+.navbar{
+    background:#2c3e50;
+    color:#fff;
+    padding:12px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
 
-/* --- Header --- */
-h1 {
-    font-size: 32px;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-p {
-    margin-bottom: 25px;
-    font-size: 16px;
-    color: #555;
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
-/* --- Cards for Quick Actions --- */
-.dashboard-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+.logo-box{
+    width:40px;
+    height:40px;
+    background:#3498db;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
 }
 
-.dashboard-buttons a {
-    text-decoration: none;
+.logo-text{
+    font-weight:600;
+    font-size:16px;
 }
 
-.dashboard-buttons button {
-    width: 100%;
-    padding: 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+.user{
+    font-size:14px;
 }
 
-.dashboard-buttons button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+/* --- MAIN CONTAINER --- */
+.container{
+    width:95%;
+    max-width:1200px;
+    margin:20px auto;
 }
 
-/* Color coding */
-button.add { background: #3498db; }
-button.view { background: #1abc9c; }
-button.venue { background: #9b59b6; }
-button.seating { background: #e67e22; }
-button.logout { background: #e74c3c; }
-
-/* --- Search Box --- */
-.search-container {
-    position: relative;
-    margin-bottom: 30px;
+/* --- HEADINGS --- */
+h1{
+    margin:10px 0 5px;
 }
 
-#search {
-    width: 100%;
-    max-width: 400px;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
+p{
+    color:#666;
 }
 
-#suggestions {
-    position: absolute;
-    top: 50px;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    background: #fff;
-    z-index: 100;
+/* --- ACTION CARDS --- */
+.dashboard-buttons{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:15px;
+    margin:25px 0;
 }
 
-.suggestion-item {
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.suggestion-item:hover { background: #f1f1f1; }
-
-/* --- Tables --- */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+.dashboard-buttons a{
+    text-decoration:none;
 }
 
-th, td {
-    padding: 15px 12px;
-    text-align: left;
+.dashboard-buttons button{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:12px;
+    color:white;
+    font-weight:500;
+    cursor:pointer;
+    transition:0.3s;
+    font-size:15px;
 }
 
-th {
-    background: #3498db;
-    color: #fff;
-    font-weight: 500;
-    font-size: 14px;
+.dashboard-buttons button:hover{
+    transform:translateY(-3px);
 }
 
-tr:nth-child(even) { background: #f9f9f9; }
+button.add{background:#3498db;}
+button.view{background:#1abc9c;}
+button.venue{background:#9b59b6;}
+button.seating{background:#e67e22;}
+button.logout{background:#e74c3c;}
 
-tr:hover { background: #f1f1f1; }
-
-button.edit-btn {
-    background: #2ecc71;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 5px;
+/* --- SEARCH --- */
+.search-container{
+    margin-bottom:30px;
 }
 
-button.delete-btn {
-    background: #e74c3c;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 5px;
+#search{
+    width:100%;
+    max-width:400px;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 
-/* --- Responsive --- */
+#suggestions{
+    background:white;
+    border:1px solid #ccc;
+    border-top:none;
+    max-width:400px;
+}
+
+.suggestion-item{
+    padding:10px;
+    cursor:pointer;
+}
+.suggestion-item:hover{
+    background:#f1f1f1;
+}
+
+/* --- TABLE --- */
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:15px;
+}
+
+th,td{
+    padding:12px;
+    text-align:left;
+}
+
+th{
+    background:#3498db;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f9f9f9;
+}
+
+/* --- MOBILE --- */
 @media(max-width:768px){
-    .dashboard-buttons {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 15px;
+
+    .navbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
     }
-    table th, table td {
-        padding: 10px;
-        font-size: 13px;
+
+    .logo-text{
+        font-size:14px;
+    }
+
+    .dashboard-buttons{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-buttons button{
+        padding:14px;
+        font-size:14px;
+    }
+
+    h1{
+        font-size:22px;
+    }
+
+    p{
+        font-size:14px;
+    }
+
+    table{
+        font-size:13px;
     }
 }
+
+@media(max-width:480px){
+
+    .dashboard-buttons{
+        grid-template-columns:1fr;
+    }
+
+    #search{
+        width:100%;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
+<div class="navbar">
+
+    <div class="logo">
+        <div class="logo-box">🎓</div>
+        <div class="logo-text">Exam Seating System</div>
+    </div>
+
+    <div class="user">
+        <?php echo $_SESSION['name'] ?? 'Lecturer'; ?>
+    </div>
+
+</div>
+
 <div class="container">
 
 <h1>Lecturer Dashboard</h1>
-<p>Welcome, <strong><?php echo $_SESSION['name'] ?? 'Lecturer'; ?></strong> 👋</p>
-<!-- Quick Action Cards -->
+<p>Manage students, venues and seating efficiently.</p>
+
+<!-- ACTIONS -->
 <div class="dashboard-buttons">
 <a href="add_student.php"><button class="add">Add Student</button></a>
 <a href="view_students.php"><button class="view">View Students</button></a>
@@ -195,39 +256,46 @@ button.delete-btn {
 <a href="../logout.php"><button class="logout">Logout</button></a>
 </div>
 
-<!-- Search Students -->
+<!-- SEARCH -->
 <div class="search-container">
 <h2>Search Students</h2>
 <input type="text" id="search" placeholder="Search by name, matric no or department">
 <div id="suggestions"></div>
 </div>
 
-<!-- Departments Overview -->
+<!-- DEPARTMENTS -->
 <h2>Departments Overview</h2>
-<table style="width:50%;">
+
+<div class="table-wrapper">
+<table>
 <tr>
 <th>Department</th>
 <th>Student Count</th>
 </tr>
+
 <?php foreach($departments as $dept): ?>
 <tr>
-<td><?php echo $dept['department']; ?></td>
+<td><?php echo htmlspecialchars($dept['department']); ?></td>
 <td><?php echo $dept['total']; ?></td>
 </tr>
 <?php endforeach; ?>
+
 </table>
+</div>
 
 </div>
 
 <script>
 document.getElementById("search").addEventListener("keyup", function(){
     let query = this.value;
+
     if(query.length < 1){
         document.getElementById("suggestions").innerHTML = "";
         return;
     }
+
     fetch("search_students.php?q=" + encodeURIComponent(query))
-    .then(response => response.text())
+    .then(res => res.text())
     .then(data => {
         document.getElementById("suggestions").innerHTML = data;
     });
