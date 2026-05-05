@@ -11,23 +11,49 @@ $db = (new Database())->connect();
 
 $message="";
 
+// Fetch venues
 $stmt = $db->query("SELECT * FROM venue ORDER BY venue_name ASC");
 $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+/* ======================
+   UPDATE VENUE
+====================== */
 if(isset($_POST['save_venue'])){
 
-$venue_name = $_POST['venue_name'];
-$rows = $_POST['seat_rows'];
-$columns = $_POST['columns_count'];
-$capacity = $rows * $columns;
+    $venue_id = $_POST['venue_id'];
+    $rows = (int)$_POST['seat_rows'];
+    $columns = (int)$_POST['columns_count'];
+    $capacity = $rows * $columns;
 
-$stmt = $db->prepare("UPDATE venue 
-SET seat_rows=?, columns_count=?, capacity=? 
-WHERE venue_name=?");
+    $stmt = $db->prepare("UPDATE venue 
+        SET seat_rows=?, columns_count=?, capacity=? 
+        WHERE id=?");
 
-$stmt->execute([$rows,$columns,$capacity,$venue_name]);
+    if($stmt->execute([$rows,$columns,$capacity,$venue_id])){
+        $message = "Venue updated successfully!";
+    } else {
+        $message = "Error updating venue.";
+    }
+}
 
-$message="Venue metrics updated successfully!";
+/* ======================
+   ADD NEW VENUE
+====================== */
+if(isset($_POST['add_venue'])){
+
+    $name = trim($_POST['new_venue_name']);
+    $rows = (int)$_POST['new_rows'];
+    $columns = (int)$_POST['new_columns'];
+    $capacity = $rows * $columns;
+
+    if($name){
+        $stmt = $db->prepare("INSERT INTO venue (venue_name, seat_rows, columns_count, capacity) VALUES (?, ?, ?, ?)");
+        if($stmt->execute([$name,$rows,$columns,$capacity])){
+            $message = "New venue created successfully!";
+        } else {
+            $message = "Error creating venue.";
+        }
+    }
 }
 ?>
 
@@ -199,7 +225,6 @@ button:hover{
 
 /* ===== MOBILE ===== */
 @media(max-width:600px){
-
     .container{
         margin:15px;
         padding:20px;
@@ -238,16 +263,17 @@ button:hover{
 <div class="message"><?php echo $message; ?></div>
 <?php endif; ?>
 
+<!-- ================= UPDATE ================= -->
 <form method="POST">
 
 <label>Select Venue</label>
 
-<select id="venueSelect" name="venue_name" required>
+<select id="venueSelect" name="venue_id" required>
 <option value="">Select Venue</option>
 
 <?php foreach($venues as $v): ?>
 <option 
-value="<?php echo htmlspecialchars($v['venue_name']); ?>"
+value="<?php echo $v['id']; ?>"
 data-rows="<?php echo $v['seat_rows']; ?>"
 data-columns="<?php echo $v['columns_count']; ?>">
 
@@ -278,6 +304,23 @@ Save Venue Settings
 
 </form>
 
+<hr style="margin:30px 0;">
+
+<!-- ================= ADD NEW ================= -->
+<h3>Add New Venue</h3>
+
+<form method="POST">
+
+<input type="text" name="new_venue_name" placeholder="Venue Name" required>
+<input type="number" name="new_rows" placeholder="Rows" required>
+<input type="number" name="new_columns" placeholder="Seats per Row" required>
+
+<button type="submit" name="add_venue">
+Create Venue
+</button>
+
+</form>
+
 </div>
 
 <script>
@@ -304,7 +347,7 @@ calculateCapacity();
 rowsInput.addEventListener("input", calculateCapacity);
 columnsInput.addEventListener("input", calculateCapacity);
 
-// DARK MODE
+// DARK MODE (PERSISTENT)
 const toggle = document.getElementById("darkToggle");
 
 if(localStorage.getItem("theme") === "dark"){
