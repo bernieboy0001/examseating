@@ -21,8 +21,6 @@ $rows = $_POST['seat_rows'];
 $columns = $_POST['columns_count'];
 $capacity = $rows * $columns;
 
-/* update venue metrics */
-
 $stmt = $db->prepare("UPDATE venue 
 SET seat_rows=?, columns_count=?, capacity=? 
 WHERE venue_name=?");
@@ -38,96 +36,179 @@ $message="Venue metrics updated successfully!";
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Venue Settings</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
 
+/* ===== THEME ===== */
+:root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#333;
+    --primary:#2c7be5;
+    --border:#ddd;
+}
+
+.dark-mode{
+    --bg:#121212;
+    --card:#1e1e1e;
+    --text:#e0e0e0;
+    --primary:#4da3ff;
+    --border:#333;
+}
+
+/* ===== GLOBAL ===== */
 body{
-font-family:Roboto;
-background:#f5f7fb;
-margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+    margin:0;
+    color:var(--text);
+    transition:0.3s;
 }
 
+/* ===== NAVBAR ===== */
+.nav{
+    background:var(--card);
+    padding:12px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.logo-box{
+    width:38px;
+    height:38px;
+    background:var(--primary);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+}
+
+.toggle{
+    cursor:pointer;
+    padding:6px 10px;
+    border-radius:6px;
+    border:1px solid var(--border);
+}
+
+/* ===== CONTAINER ===== */
 .container{
-max-width:650px;
-margin:60px auto;
-background:white;
-padding:35px;
-border-radius:12px;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    max-width:650px;
+    margin:30px auto;
+    background:var(--card);
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
 }
 
+/* ===== HEADER ===== */
 .header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:25px;
-}
-
-h2{
-margin:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
 }
 
 .back-btn{
-background:#6c757d;
-color:white;
-padding:8px 14px;
-border-radius:6px;
-text-decoration:none;
+    background:#6c757d;
+    color:white;
+    padding:8px 14px;
+    border-radius:6px;
+    text-decoration:none;
 }
 
-.back-btn:hover{
-opacity:0.9;
-}
-
+/* ===== FORM ===== */
 label{
-font-weight:500;
+    font-weight:500;
 }
 
 select,input{
-width:100%;
-padding:10px;
-margin:8px 0 18px 0;
-border:1px solid #ddd;
-border-radius:6px;
-font-size:14px;
+    width:100%;
+    padding:12px;
+    margin:8px 0 18px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--card);
+    color:var(--text);
 }
 
+input:focus, select:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+/* ===== INFO BOXES ===== */
 .info-box{
-background:#eef4ff;
-padding:15px;
-border-radius:8px;
-margin-bottom:20px;
-font-size:14px;
+    background:#eef4ff;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+.dark-mode .info-box{
+    background:#1c2a40;
 }
 
 .capacity-box{
-background:#f7f7f7;
-padding:10px;
-border-radius:6px;
-margin-bottom:20px;
+    background:#f7f7f7;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:20px;
+    text-align:center;
 }
 
+.dark-mode .capacity-box{
+    background:#2a2a2a;
+}
+
+/* ===== BUTTON ===== */
 button{
-background:#2c7be5;
-color:white;
-padding:12px 18px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:500;
+    width:100%;
+    background:var(--primary);
+    color:white;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:500;
 }
 
 button:hover{
-opacity:0.9;
+    opacity:0.9;
 }
 
+/* ===== MESSAGE ===== */
 .message{
-color:green;
-font-weight:500;
-margin-bottom:15px;
+    background:#eafaf1;
+    color:#27ae60;
+    padding:12px;
+    border-radius:6px;
+    margin-bottom:15px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+
+    .container{
+        margin:15px;
+        padding:20px;
+    }
+
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
 }
 
 </style>
@@ -136,6 +217,16 @@ margin-bottom:15px;
 
 <body>
 
+<!-- NAV -->
+<div class="nav">
+    <div class="logo">
+        <div class="logo-box">🏫</div>
+        <strong>Venue Setup</strong>
+    </div>
+
+    <span class="toggle" id="darkToggle">🌙</span>
+</div>
+
 <div class="container">
 
 <div class="header">
@@ -143,33 +234,32 @@ margin-bottom:15px;
 <a href="dashboard.php" class="back-btn">← Back</a>
 </div>
 
-<?php if($message) echo "<p class='message'>$message</p>"; ?>
+<?php if($message): ?>
+<div class="message"><?php echo $message; ?></div>
+<?php endif; ?>
 
 <form method="POST">
 
 <label>Select Venue</label>
 
 <select id="venueSelect" name="venue_name" required>
-
 <option value="">Select Venue</option>
 
 <?php foreach($venues as $v): ?>
-
 <option 
-value="<?php echo $v['venue_name']; ?>"
+value="<?php echo htmlspecialchars($v['venue_name']); ?>"
 data-rows="<?php echo $v['seat_rows']; ?>"
 data-columns="<?php echo $v['columns_count']; ?>">
 
-<?php echo $v['venue_name']; ?>
+<?php echo htmlspecialchars($v['venue_name']); ?>
 
 </option>
-
 <?php endforeach; ?>
 
 </select>
 
 <div class="info-box">
-You can adjust the seating layout if the exam arrangement changes.
+You can adjust seating layout if exam arrangement changes.
 </div>
 
 <label>Rows</label>
@@ -192,33 +282,47 @@ Save Venue Settings
 
 <script>
 
+// CAPACITY
 let venueSelect = document.getElementById("venueSelect");
 let rowsInput = document.getElementById("rows");
 let columnsInput = document.getElementById("columns");
 let capacityDisplay = document.getElementById("capacity");
 
 function calculateCapacity(){
-
 let rows = parseInt(rowsInput.value) || 0;
 let columns = parseInt(columnsInput.value) || 0;
-
 capacityDisplay.innerText = rows * columns;
-
 }
 
 venueSelect.addEventListener("change", function(){
-
 let selected = this.options[this.selectedIndex];
-
 rowsInput.value = selected.dataset.rows || "";
 columnsInput.value = selected.dataset.columns || "";
-
 calculateCapacity();
-
 });
 
 rowsInput.addEventListener("input", calculateCapacity);
 columnsInput.addEventListener("input", calculateCapacity);
+
+// DARK MODE
+const toggle = document.getElementById("darkToggle");
+
+if(localStorage.getItem("theme") === "dark"){
+    document.body.classList.add("dark-mode");
+    toggle.innerText = "☀️";
+}
+
+toggle.addEventListener("click", ()=>{
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")){
+        localStorage.setItem("theme","dark");
+        toggle.innerText="☀️";
+    }else{
+        localStorage.setItem("theme","light");
+        toggle.innerText="🌙";
+    }
+});
 
 </script>
 
