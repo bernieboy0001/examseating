@@ -28,16 +28,35 @@ $departments = $db->query("SELECT department, COUNT(*) as total FROM students GR
 
 <style>
 
+/* --- THEME VARIABLES --- */
+:root{
+    --bg:#f4f6f9;
+    --text:#333;
+    --card:#ffffff;
+    --primary:#3498db;
+    --navbar:#2c3e50;
+}
+
+.dark-mode{
+    --bg:#121212;
+    --text:#e0e0e0;
+    --card:#1e1e1e;
+    --primary:#4da3ff;
+    --navbar:#1a1a1a;
+}
+
 /* --- GLOBAL --- */
 body{
     font-family:'Roboto',sans-serif;
-    background:#f4f6f9;
+    background:var(--bg);
+    color:var(--text);
     margin:0;
+    transition:0.3s;
 }
 
 /* --- NAVBAR --- */
 .navbar{
-    background:#2c3e50;
+    background:var(--navbar);
     color:#fff;
     padding:12px 20px;
     display:flex;
@@ -54,7 +73,7 @@ body{
 .logo-box{
     width:40px;
     height:40px;
-    background:#3498db;
+    background:var(--primary);
     border-radius:8px;
     display:flex;
     align-items:center;
@@ -71,6 +90,16 @@ body{
     font-size:14px;
 }
 
+/* DARK BUTTON */
+.toggle-btn{
+    background:none;
+    border:1px solid #ccc;
+    color:white;
+    padding:5px 10px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
 /* --- MAIN CONTAINER --- */
 .container{
     width:95%;
@@ -84,7 +113,7 @@ h1{
 }
 
 p{
-    color:#666;
+    color:var(--text);
 }
 
 /* --- ACTION CARDS --- */
@@ -132,10 +161,12 @@ button.logout{background:#e74c3c;}
     padding:12px;
     border-radius:8px;
     border:1px solid #ccc;
+    background:var(--card);
+    color:var(--text);
 }
 
 #suggestions{
-    background:white;
+    background:var(--card);
     border:1px solid #ccc;
     border-top:none;
     max-width:400px;
@@ -157,7 +188,7 @@ button.logout{background:#e74c3c;}
 table{
     width:100%;
     border-collapse:collapse;
-    background:white;
+    background:var(--card);
     border-radius:10px;
     overflow:hidden;
     margin-top:15px;
@@ -174,7 +205,7 @@ th{
 }
 
 tr:nth-child(even){
-    background:#f9f9f9;
+    background:rgba(0,0,0,0.03);
 }
 
 /* --- MOBILE --- */
@@ -186,40 +217,18 @@ tr:nth-child(even){
         gap:8px;
     }
 
-    .logo-text{
-        font-size:14px;
-    }
-
     .dashboard-buttons{
         grid-template-columns:repeat(2,1fr);
-    }
-
-    .dashboard-buttons button{
-        padding:14px;
-        font-size:14px;
     }
 
     h1{
         font-size:22px;
     }
-
-    p{
-        font-size:14px;
-    }
-
-    table{
-        font-size:13px;
-    }
 }
 
 @media(max-width:480px){
-
     .dashboard-buttons{
         grid-template-columns:1fr;
-    }
-
-    #search{
-        width:100%;
     }
 }
 
@@ -236,8 +245,11 @@ tr:nth-child(even){
         <div class="logo-text">Exam Seating System</div>
     </div>
 
-    <div class="user">
-        <?php echo $_SESSION['name'] ?? 'Lecturer'; ?>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button id="darkToggle" class="toggle-btn">🌙</button>
+        <div class="user">
+            <?php echo $_SESSION['name'] ?? 'Lecturer'; ?>
+        </div>
     </div>
 
 </div>
@@ -286,6 +298,7 @@ tr:nth-child(even){
 </div>
 
 <script>
+// SEARCH
 document.getElementById("search").addEventListener("keyup", function(){
     let query = this.value;
 
@@ -299,6 +312,27 @@ document.getElementById("search").addEventListener("keyup", function(){
     .then(data => {
         document.getElementById("suggestions").innerHTML = data;
     });
+});
+
+// DARK MODE
+const toggleBtn = document.getElementById("darkToggle");
+
+// load saved theme
+if(localStorage.getItem("theme") === "dark"){
+    document.body.classList.add("dark-mode");
+    toggleBtn.innerText = "☀️";
+}
+
+toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")){
+        localStorage.setItem("theme", "dark");
+        toggleBtn.innerText = "☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        toggleBtn.innerText = "🌙";
+    }
 });
 </script>
 
