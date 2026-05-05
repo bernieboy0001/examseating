@@ -166,6 +166,44 @@ button:hover{
         margin:10px;
         padding:20px;
     }
+} /* BETTER MOBILE UI */
+@media(max-width:600px){
+
+    h2{
+        font-size:20px;
+    }
+
+    h3{
+        font-size:16px;
+    }
+
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .badge{
+        font-size:12px;
+        padding:5px 10px;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+    .course{
+        font-size:16px;
+    }
+
+    .detail{
+        font-size:14px;
+    }
+
+    button{
+        width:100%;
+        font-size:14px;
+    }
 }
 </style>
 </head>
@@ -187,10 +225,12 @@ button:hover{
 <?php
 $nameStmt = $db->prepare("SELECT name FROM students WHERE matric_no = ?");
 $nameStmt->execute([$matric]);
-$student = $nameStmt->fetch();
+$student = $nameStmt->fetch(PDO::FETCH_ASSOC);
+
+$studentName = $student ? $student['name'] : "Student";
 ?>
 
-<h3>Welcome, <?php echo $student['name']; ?></h3>
+<h3>Welcome, <?php echo htmlspecialchars($studentName); ?></h3>
 <?php if(count($results) > 0): ?>
 
 <?php foreach($results as $r): ?>
