@@ -1,5 +1,144 @@
 <?php
-// KEEP YOUR ORIGINAL PHP CODE EXACTLY AS IS ABOVE
+session_start();
+
+if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'lecturer'){
+    header("Location: ../auth/login.php?role=lecturer");
+    exit;
+}
+
+require_once "../config/database.php";
+$db = (new Database())->connect();
+
+/* ===== SAFE DEFAULTS (FIX ERRORS) ===== */
+$message = "";
+$warning = "";
+$venues = [];
+$departments = [];
+$venueStats = [];
+$deptStats = [];
+$seating = [];
+$totalSeated = 0;
+
+/* ===== LOAD DATA SAFELY ===== */
+try{
+    $venues = $db->query("SELECT * FROM venue ORDER BY venue_name ASC")->fetchAll(PDO::FETCH_ASSOC) ?? [];
+    $departments = $db->query("SELECT DISTINCT department FROM students ORDER BY department ASC")->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
+    $totalSeated = $db->query("SELECT COUNT(*) FROM seating")->fetchColumn() ?? 0;
+
+    $venueStats = $db->query("SELECT venue, COUNT(*) as total FROM seating GROUP BY venue")->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
+    $deptStats = $db->query("SELECT department, COUNT(*) as total FROM seating GROUP BY department")->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
+    $seating = $db->query("SELECT * FROM seating ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
+}catch(Exception $e){
+    $warning = "⚠️ Error loading data";
+}
+
+/* ===== HANDLE ACTIONS ===== */
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+
+    if(isset($_POST['clear_seating'])){
+        $db->exec("
+            DELETE FROM seating 
+            WHERE created_at = (
+                SELECT latest FROM (
+                    SELECT MAX(created_at) AS latest FROM seating
+                ) t
+            )
+        ");
+
+        header("Location: generate.php?msg=cleared");
+        exit;
+    }
+
+    if(isset($_POST['generate'])){
+
+        $course = $_POST['course'];
+        $selectedVenues = $_POST['venues'] ?? [];
+        $selectedDepartments = $_POST['departments'] ?? [];
+
+        if(empty($selectedVenues) || empty($selectedDepartments)){
+            header("Location: generate.php?msg=error");
+            exit;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($selectedDepartments), '?'));
+
+        $countStmt = $db->prepare("SELECT COUNT(*) FROM students WHERE department IN ($placeholders)");
+        $countStmt->execute($selectedDepartments);
+        $totalStudents = $countStmt->fetchColumn();
+
+        $totalCapacity = 0;
+        foreach($venues as $v){
+            if(in_array($v['venue_name'], $selectedVenues)){
+                $totalCapacity += $v['capacity'];
+            }
+        }
+
+        if($totalStudents > $totalCapacity){
+            header("Location: generate.php?msg=capacity_error");
+            exit;
+        }
+
+        $stmt = $db->prepare("
+            SELECT * FROM students 
+            WHERE department IN ($placeholders)
+            ORDER BY RAND()
+        ");
+        $stmt->execute($selectedDepartments);
+        $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $student_index = 0;
+
+        function seatRow($i){
+            $letters = range('A','Z');
+            return $i < 26 ? $letters[$i] : $letters[floor($i/26)-1] . $letters[$i%26];
+        }
+
+        foreach($venues as $venue){
+            if(!in_array($venue['venue_name'], $selectedVenues)) continue;
+
+            for($r=0;$r<$venue['seat_rows'];$r++){
+                for($c=1;$c<=$venue['columns_count'];$c++){
+
+                    if(!isset($students[$student_index])) break 3;
+
+                    $student = $students[$student_index];
+
+                    $stmt = $db->prepare("
+                        INSERT INTO seating
+                        (matric_no, student_name, department, venue, seat_number, course)
+                        VALUES (?,?,?,?,?,?)
+                    ");
+
+                    $stmt->execute([
+                        $student['matric_no'],
+                        $student['name'],
+                        $student['department'],
+                        $venue['venue_name'],
+                        seatRow($r).$c,
+                        $course
+                    ]);
+
+                    $student_index++;
+                }
+            }
+        }
+
+        header("Location: generate.php?msg=generated");
+        exit;
+    }
+}
+
+/* ===== MESSAGES ===== */
+if(isset($_GET['msg'])){
+    if($_GET['msg'] === 'cleared') $message = "✅ Latest seating cleared!";
+    elseif($_GET['msg'] === 'generated') $message = "✅ Seating generated!";
+    elseif($_GET['msg'] === 'error') $message = "❌ Select venue & department";
+    elseif($_GET['msg'] === 'capacity_error') $warning = "⚠️ Not enough seats!";
+}
 ?>
 
 <!DOCTYPE html>
