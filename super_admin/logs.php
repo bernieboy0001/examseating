@@ -144,14 +144,14 @@ color:#888;
 <h2>📜 Activity Logs</h2>
 
 <div class="buttons">
-<a href="dashboard.php" class="btn back">← Dashboard</a>
+<a href="dashboard.php" class="btn back">← </a>
 
 <a href="" class="btn clear"
 onclick="return confirm('Clear ALL logs? This cannot be undone!')">
 Clear Logs
 </a>
 
-<a href="../auth/logout.php" class="btn logout">Logout</a>
+<a href="../auth/login.php" class="btn logout">Logout</a>
 </div>
 </div>
 
