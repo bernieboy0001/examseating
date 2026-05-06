@@ -332,10 +332,7 @@ transform:none !important;
 <span class="toggle-pass" onclick="togglePass('loginPass')">👁</span>
 </div>
 
-<label class="remember">
-<input type="checkbox" name="remember">
-<span>Remember me</span>
-</label>
+
 
 <button type="submit" name="login">Login</button>
 
